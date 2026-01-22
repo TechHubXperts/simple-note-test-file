@@ -1,14 +1,27 @@
 import { test, expect } from '@playwright/test';
 
+
+
+async function waitForPageReady(page, label = 'Page') {
+  const startTime = Date.now();
+  
+  await page.waitForLoadState('domcontentloaded');
+  await page.waitForLoadState('networkidle');
+  await page.waitForSelector('body', { state: 'visible' });
+  await page.waitForTimeout(50); // Stabilization
+  const elapsed = Date.now() - startTime;
+  console.log(`✅ ${label} ready in ${elapsed}ms`);
+}
+
 test.describe('Milestone 1: Frontend End-to-End Tests', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:5173');
-    await page.waitForTimeout(500);
-  });
+
+    test.beforeEach(async ({ page }) => {
+      await page.goto('http://localhost:5173');
+      await waitForPageReady(page, 'Initial load');
+    });
+
 
   test('App loads and displays basic UI', async ({ page }) => {
-    await page.goto('http://localhost:5173');
-    await page.waitForTimeout(500);
 
     // Check app title exists (using heading role)
     const heading = page.getByRole('heading', { name: /simple notes/i });
@@ -24,17 +37,12 @@ test.describe('Milestone 1: Frontend End-to-End Tests', () => {
   });
 
   test('Shows empty state when no notes exist', async ({ page }) => {
-    await page.goto('http://localhost:5173');
-    await page.waitForTimeout(500);
 
     // Check empty state message (using text content)
     await expect(page.getByText(/no notes yet/i)).toBeVisible();
   });
 
   test('Can create a new note', async ({ page }) => {
-    await page.goto('http://localhost:5173');
-    await page.waitForTimeout(500);
-
     // Get initial state - check if empty message exists
     const emptyMessage = page.getByText(/no notes yet/i);
     const initiallyEmpty = await emptyMessage.isVisible().catch(() => false);
@@ -46,7 +54,6 @@ test.describe('Milestone 1: Frontend End-to-End Tests', () => {
     // Click submit button (using role)
     const submitButton = page.getByRole('button', { name: /submit/i });
     await submitButton.click();
-    await page.waitForTimeout(500);
 
     // Verify note appears in list (using text content)
     await expect(page.getByText('My Test Note')).toBeVisible();
@@ -58,8 +65,6 @@ test.describe('Milestone 1: Frontend End-to-End Tests', () => {
   });
 
   test('Can create multiple notes', async ({ page }) => {
-    await page.goto('http://localhost:5173');
-    await page.waitForTimeout(500);
 
     const input = page.getByRole('textbox');
     const submitButton = page.getByRole('button', { name: /submit/i });
@@ -67,17 +72,14 @@ test.describe('Milestone 1: Frontend End-to-End Tests', () => {
     // Create first note
     await input.fill('First Note');
     await submitButton.click();
-    await page.waitForTimeout(300);
 
     // Create second note
     await input.fill('Second Note');
     await submitButton.click();
-    await page.waitForTimeout(300);
 
     // Create third note
     await input.fill('Third Note');
     await submitButton.click();
-    await page.waitForTimeout(500);
 
     // Verify all notes are displayed (using text content)
     await expect(page.getByText('First Note')).toBeVisible();
@@ -86,16 +88,12 @@ test.describe('Milestone 1: Frontend End-to-End Tests', () => {
   });
 
   test('Input clears after submitting a note', async ({ page }) => {
-    await page.goto('http://localhost:5173');
-    await page.waitForTimeout(500);
-
     const input = page.getByRole('textbox');
     const submitButton = page.getByRole('button', { name: /submit/i });
 
     // Type and submit
     await input.fill('Test Note');
     await submitButton.click();
-    await page.waitForTimeout(300);
 
     // Verify input is cleared
     await expect(input).toHaveValue('');
