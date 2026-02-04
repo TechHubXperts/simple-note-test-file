@@ -15,14 +15,17 @@ async function waitForPageReady(page, label = 'Page') {
 
 test.describe('Milestone 1: Frontend End-to-End Tests', () => {
 
-    test.beforeEach(async ({ page }) => {
-      await page.goto('http://localhost:5173');
-      await waitForPageReady(page, 'Initial load');
-    });
+  test.beforeEach(async ({ page }) => {
+    await page.goto('http://localhost:5173');
+    await waitForPageReady(page, 'Initial load');
+    // Clear localStorage for clean state
+    await page.evaluate(() => localStorage.clear());
+    await page.reload();
+    await waitForPageReady(page, 'After localStorage clear');
+  });
 
-
-  test('App loads and displays basic UI', async ({ page }) => {
-
+  // --------------------- Task 1: App loads and displays basic UI ---------------------
+  test('App loads and displays basic UI', { tag: ['@M1-T1'] }, async ({ page }) => {
     // Check app title exists (using heading role)
     const heading = page.getByRole('heading', { name: /simple notes/i });
     await expect(heading).toBeVisible();
@@ -36,13 +39,14 @@ test.describe('Milestone 1: Frontend End-to-End Tests', () => {
     await expect(submitButton).toBeVisible();
   });
 
-  test('Shows empty state when no notes exist', async ({ page }) => {
-
+  // --------------------- Task 2: Shows empty state when no notes exist ---------------------
+  test('Shows empty state when no notes exist', { tag: ['@M1-T2'] }, async ({ page }) => {
     // Check empty state message (using text content)
     await expect(page.getByText(/no notes yet/i)).toBeVisible();
   });
 
-  test('Can create a new note', async ({ page }) => {
+  // --------------------- Task 3: Can create a new note ---------------------
+  test('Can create a new note', { tag: ['@M1-T3'] }, async ({ page }) => {
     // Get initial state - check if empty message exists
     const emptyMessage = page.getByText(/no notes yet/i);
     const initiallyEmpty = await emptyMessage.isVisible().catch(() => false);
@@ -64,8 +68,8 @@ test.describe('Milestone 1: Frontend End-to-End Tests', () => {
     }
   });
 
-  test('Can create multiple notes', async ({ page }) => {
-
+  // --------------------- Task 4: Can create multiple notes ---------------------
+  test('Can create multiple notes', { tag: ['@M1-T4'] }, async ({ page }) => {
     const input = page.getByRole('textbox');
     const submitButton = page.getByRole('button', { name: /submit/i });
 
@@ -87,7 +91,8 @@ test.describe('Milestone 1: Frontend End-to-End Tests', () => {
     await expect(page.getByText('Third Note')).toBeVisible();
   });
 
-  test('Input clears after submitting a note', async ({ page }) => {
+  // --------------------- Task 5: Input clears after submitting a note ---------------------
+  test('Input clears after submitting a note', { tag: ['@M1-T5'] }, async ({ page }) => {
     const input = page.getByRole('textbox');
     const submitButton = page.getByRole('button', { name: /submit/i });
 
