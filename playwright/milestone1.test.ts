@@ -25,7 +25,7 @@ test.describe('Milestone 1: Frontend End-to-End Tests', () => {
   });
 
   // --------------------- Task 1: App loads and displays basic UI ---------------------
-  test('App loads and displays basic UI', { tag: ['@M1-T1'] }, async ({ page }) => {
+  test('I am changing the name here App loads and displays basic UI', { tag: ['@M1-T1'] }, async ({ page }) => {
     // Check app title exists (using heading role)
     const heading = page.getByRole('heading', { name: /simple notes/i });
     await expect(heading).toBeVisible();
@@ -69,7 +69,7 @@ test.describe('Milestone 1: Frontend End-to-End Tests', () => {
   });
 
   // --------------------- Task 4: Can create multiple notes ---------------------
-  test('Can create multiple notes', { tag: ['@M1-T4'] }, async ({ page }) => {
+  test(' I am changing the name here as well Can create multiple notes', { tag: ['@M1-T4'] }, async ({ page }) => {
     const input = page.getByRole('textbox');
     const submitButton = page.getByRole('button', { name: /submit/i });
 
